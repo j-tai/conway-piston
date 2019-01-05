@@ -14,6 +14,9 @@ pub struct Control {
     pub hover_cell: Option<(usize, usize)>,
     /// Last mouse cursor position.
     cursor_pos: (f64, f64),
+    /// Whether the mouse is currently drawing live or dead
+    /// cells. `None` if the mouse button is not being held.
+    drawing_state: Option<bool>,
 }
 
 impl Control {
@@ -23,17 +26,11 @@ impl Control {
             grid,
             hover_cell: None,
             cursor_pos: (0.0, 0.0),
+            drawing_state: None,
         }
     }
 
-    /// Toggle the current hovered cell. If the mouse is not hovering
-    /// over any cell, this method does nothing.
-    pub fn toggle_hovered(&mut self) {
-        if let Some((row, col)) = self.hover_cell {
-            self.grid[row][col] = !self.grid[row][col];
-        }
-    }
-
+    /// Handle an event.
     pub fn event<E: GenericEvent>(&mut self, set: &Settings, e: &E) {
         // Handle hovered cell
         if let Some([x, y]) = e.mouse_cursor_args() {
@@ -42,17 +39,29 @@ impl Control {
             let cell_off = set.cell_width + set.cell_distance;
             let hover_x = ((self.cursor_pos.0 - off) / cell_off) as isize;
             let hover_y = ((self.cursor_pos.1 - off) / cell_off) as isize;
-            if hover_x < 0 || hover_y < 0
-                || hover_x >= self.grid.cols() as isize
-                || hover_y >= self.grid.rows() as isize {
+            if hover_x < 0 || hover_y < 0 || hover_x >= self.grid.cols() as isize || hover_y >= self.grid.rows() as isize {
                 self.hover_cell = None;
             } else {
-                self.hover_cell = Some((hover_y as usize, hover_x as usize));
+                let cell = (hover_y as usize, hover_x as usize);
+                if self.hover_cell != Some(cell) {
+                    // Mouse moved to a different cell
+                    self.hover_cell = Some(cell);
+                    if let Some(state) = self.drawing_state {
+                        self.grid[cell.0][cell.1] = state;
+                    }
+                }
             }
         }
 
         if let Some(Button::Mouse(MouseButton::Left)) = e.press_args() {
-            self.toggle_hovered();
+            if let Some(hover) = self.hover_cell {
+                let state = !self.grid[hover.0][hover.1];
+                self.drawing_state = Some(state);
+                self.grid[hover.0][hover.1] = state;
+            }
+        }
+        if let Some(Button::Mouse(MouseButton::Left)) = e.release_args() {
+            self.drawing_state = None;
         }
 
         if let Some(Button::Keyboard(key)) = e.press_args() {
