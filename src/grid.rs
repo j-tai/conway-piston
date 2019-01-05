@@ -92,3 +92,12 @@ impl Index<usize> for Grid {
 impl IndexMut<usize> for Grid {
     fn index_mut(&mut self, r: usize) -> &mut [bool] { &mut self.cells[r] }
 }
+
+impl Index<(usize, usize)> for Grid {
+    type Output = bool;
+    fn index(&self, (r, c): (usize, usize)) -> &bool { &self.cells[r][c] }
+}
+
+impl IndexMut<(usize, usize)> for Grid {
+    fn index_mut(&mut self, (r, c): (usize, usize)) -> &mut bool { &mut self.cells[r][c] }
+}

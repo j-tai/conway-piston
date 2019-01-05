@@ -47,7 +47,7 @@ impl Control {
                     // Mouse moved to a different cell
                     self.hover_cell = Some(cell);
                     if let Some(state) = self.drawing_state {
-                        self.grid[cell.0][cell.1] = state;
+                        self.grid[cell] = state;
                     }
                 }
             }
@@ -55,9 +55,9 @@ impl Control {
 
         if let Some(Button::Mouse(MouseButton::Left)) = e.press_args() {
             if let Some(hover) = self.hover_cell {
-                let state = !self.grid[hover.0][hover.1];
+                let state = !self.grid[hover];
                 self.drawing_state = Some(state);
-                self.grid[hover.0][hover.1] = state;
+                self.grid[hover] = state;
             }
         }
         if let Some(Button::Mouse(MouseButton::Left)) = e.release_args() {
