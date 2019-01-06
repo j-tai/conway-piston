@@ -28,7 +28,7 @@ fn main() {
     let mut gl = GlGraphics::new(opengl);
 
     let set = Settings::default();
-    let grid = Grid::new(24, 24);
+    let grid = Grid::default();
     let mut ctl = Control::new(grid);
 
     while let Some(e) = events.next(&mut window) {
