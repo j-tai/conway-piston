@@ -48,30 +48,49 @@ impl Grid {
         }
     }
 
+    fn get_isize(&self, mut row: isize, mut col: isize, wrap: bool) -> bool {
+        if wrap {
+            if row < 0 {
+                row += self.rows() as isize;
+            } else {
+                row %= self.rows() as isize;
+            }
+            if col < 0 {
+                col += self.cols() as isize;
+            } else {
+                col %= self.cols() as isize;
+            }
+        } else if row < 0 || col < 0 {
+            return false;
+        }
+        self.get(row as usize, col as usize)
+    }
+
     /// Count the number of alive neighbors of a cell.
-    fn count_neighbors(&self, r: usize, c: usize) -> usize {
+    fn count_neighbors(&self, r: usize, c: usize, wrap: bool) -> usize {
+        let r = r as isize;
+        let c = c as isize;
         let mut count = 0;
-        let l = r == 0;
-        let t = c == 0;
-        if !l && !t && self.get(r-1, c-1) { count += 1; }
-        if !l && self.get(r-1, c  ) { count += 1; }
-        if !l && self.get(r-1, c+1) { count += 1; }
-        if !t && self.get(r  , c-1) { count += 1; }
-        if !t && self.get(r+1, c-1) { count += 1; }
-        if self.get(r+1, c  ) { count += 1; }
-        if self.get(r  , c+1) { count += 1; }
-        if self.get(r+1, c+1) { count += 1; }
+        for nr in r-1 ..= r+1 {
+            for nc in c-1 ..= c+1 {
+                // Don't count the same cell
+                if (nr, nc) == (r, c) { continue; }
+                if self.get_isize(nr, nc, wrap) { count += 1; }
+            }
+        }
         count
     }
 
-    /// Step to the next generation in-place.
-    pub fn step(&mut self) {
+    /// Step to the next generation in-place. If `wrap` is `true`,
+    /// then the grid will wrap around, i.e. cells at the edges will
+    /// have neighbors on the opposite side of the grid.
+    pub fn step(&mut self, wrap: bool) {
         let rows = self.rows();
         let cols = self.cols();
         let mut new_cells = vec![vec![false; cols]; rows];
         for r in 0..rows {
             for c in 0..cols {
-                let count = self.count_neighbors(r, c);
+                let count = self.count_neighbors(r, c, wrap);
                 new_cells[r][c] = match (self[r][c], count) {
                     (false, 3) => true,
                     (true, 2) => true,

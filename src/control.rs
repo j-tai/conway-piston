@@ -75,7 +75,7 @@ impl Control {
 
         if let Some(Button::Keyboard(key)) = e.press_args() {
             if key == Key::Space {
-                self.grid.step()
+                self.grid.step(set.wraparound);
             }
         }
     }

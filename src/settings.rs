@@ -3,6 +3,10 @@ use graphics::types::Color;
 /// Stores the settings for rendering and interaction.
 #[derive(Clone)]
 pub struct Settings {
+    /// Whether or not the grid should wrap around, i.e. cells at the
+    /// edge of the grid should have neighbors on the opposite edge.
+    pub wraparound: bool,
+
     /// Distance of grid from the top-left corner of the window.
     pub offset: f64,
     /// Width of each cell.
@@ -21,6 +25,8 @@ pub struct Settings {
 impl Default for Settings {
     fn default() -> Self {
         Settings {
+            wraparound: true,
+
             offset: 4.0,
             cell_width: 16.0,
             cell_distance: 2.0,
