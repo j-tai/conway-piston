@@ -32,6 +32,15 @@ impl Control {
 
     /// Handle an event.
     pub fn event<E: GenericEvent>(&mut self, set: &Settings, e: &E) {
+        // Handle window resize, resizing the grid accordingly
+        if let Some([x, y]) = e.resize_args() {
+            let rows = (y - set.offset * 2.0 - set.cell_distance) / (set.cell_width + set.cell_distance);
+            let cols = (x - set.offset * 2.0 - set.cell_distance) / (set.cell_width + set.cell_distance);
+            let rows = if rows <= 1.0 { 1 } else { rows as usize };
+            let cols = if cols <= 1.0 { 1 } else { cols as usize };
+            self.grid.resize(rows, cols);
+        }
+
         // Handle hovered cell
         if let Some([x, y]) = e.mouse_cursor_args() {
             self.cursor_pos = (x, y);
