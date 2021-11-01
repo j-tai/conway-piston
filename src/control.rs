@@ -2,6 +2,7 @@ use piston::input::Button;
 use piston::input::GenericEvent;
 use piston::input::Key;
 use piston::input::MouseButton;
+use piston::ResizeArgs;
 
 use crate::Grid;
 use crate::Settings;
@@ -33,9 +34,15 @@ impl Control {
     /// Handle an event.
     pub fn event<E: GenericEvent>(&mut self, set: &Settings, e: &E) {
         // Handle window resize, resizing the grid accordingly
-        if let Some([x, y]) = e.resize_args() {
-            let rows = (y - set.offset * 2.0 - set.cell_distance) / (set.cell_width + set.cell_distance);
-            let cols = (x - set.offset * 2.0 - set.cell_distance) / (set.cell_width + set.cell_distance);
+        if let Some(ResizeArgs {
+            window_size: [x, y],
+            ..
+        }) = e.resize_args()
+        {
+            let rows =
+                (y - set.offset * 2.0 - set.cell_distance) / (set.cell_width + set.cell_distance);
+            let cols =
+                (x - set.offset * 2.0 - set.cell_distance) / (set.cell_width + set.cell_distance);
             let rows = if rows <= 1.0 { 1 } else { rows as usize };
             let cols = if cols <= 1.0 { 1 } else { cols as usize };
             self.grid.resize(rows, cols);
@@ -48,7 +55,11 @@ impl Control {
             let cell_off = set.cell_width + set.cell_distance;
             let hover_x = ((self.cursor_pos.0 - off) / cell_off) as isize;
             let hover_y = ((self.cursor_pos.1 - off) / cell_off) as isize;
-            if hover_x < 0 || hover_y < 0 || hover_x >= self.grid.cols() as isize || hover_y >= self.grid.rows() as isize {
+            if hover_x < 0
+                || hover_y < 0
+                || hover_x >= self.grid.cols() as isize
+                || hover_y >= self.grid.rows() as isize
+            {
                 self.hover_cell = None;
             } else {
                 let cell = (hover_y as usize, hover_x as usize);

@@ -10,15 +10,23 @@ pub struct Grid {
 impl Grid {
     /// Create an empty grid with all cells dead.
     pub fn new(rows: usize, cols: usize) -> Grid {
-        Grid { cells: vec![vec![false; cols]; rows] }
+        Grid {
+            cells: vec![vec![false; cols]; rows],
+        }
     }
 
     /// Get the number of rows in this grid.
-    pub fn rows(&self) -> usize { self.cells.len() }
+    pub fn rows(&self) -> usize {
+        self.cells.len()
+    }
 
     /// Get the number of columns in this grid.
     pub fn cols(&self) -> usize {
-        if self.rows() == 0 { 0 } else { self.cells[0].len() }
+        if self.rows() == 0 {
+            0
+        } else {
+            self.cells[0].len()
+        }
     }
 
     /// Get the cell at the given position. If the position is out of
@@ -71,11 +79,15 @@ impl Grid {
         let r = r as isize;
         let c = c as isize;
         let mut count = 0;
-        for nr in r-1 ..= r+1 {
-            for nc in c-1 ..= c+1 {
+        for nr in r - 1..=r + 1 {
+            for nc in c - 1..=c + 1 {
                 // Don't count the same cell
-                if (nr, nc) == (r, c) { continue; }
-                if self.get_isize(nr, nc, wrap) { count += 1; }
+                if (nr, nc) == (r, c) {
+                    continue;
+                }
+                if self.get_isize(nr, nc, wrap) {
+                    count += 1;
+                }
             }
         }
         count
@@ -95,7 +107,7 @@ impl Grid {
                     (false, 3) => true,
                     (true, 2) => true,
                     (true, 3) => true,
-                    _ => false
+                    _ => false,
                 };
             }
         }
@@ -105,18 +117,26 @@ impl Grid {
 
 impl Index<usize> for Grid {
     type Output = [bool];
-    fn index(&self, r: usize) -> &[bool] { &self.cells[r] }
+    fn index(&self, r: usize) -> &[bool] {
+        &self.cells[r]
+    }
 }
 
 impl IndexMut<usize> for Grid {
-    fn index_mut(&mut self, r: usize) -> &mut [bool] { &mut self.cells[r] }
+    fn index_mut(&mut self, r: usize) -> &mut [bool] {
+        &mut self.cells[r]
+    }
 }
 
 impl Index<(usize, usize)> for Grid {
     type Output = bool;
-    fn index(&self, (r, c): (usize, usize)) -> &bool { &self.cells[r][c] }
+    fn index(&self, (r, c): (usize, usize)) -> &bool {
+        &self.cells[r][c]
+    }
 }
 
 impl IndexMut<(usize, usize)> for Grid {
-    fn index_mut(&mut self, (r, c): (usize, usize)) -> &mut bool { &mut self.cells[r][c] }
+    fn index_mut(&mut self, (r, c): (usize, usize)) -> &mut bool {
+        &mut self.cells[r][c]
+    }
 }

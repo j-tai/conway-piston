@@ -1,9 +1,9 @@
 use glutin_window::GlutinWindow;
-use opengl_graphics::OpenGL;
 use opengl_graphics::GlGraphics;
+use opengl_graphics::OpenGL;
 use piston::event_loop::EventLoop;
-use piston::event_loop::Events;
 use piston::event_loop::EventSettings;
+use piston::event_loop::Events;
 use piston::input::RenderEvent;
 use piston::window::WindowSettings;
 
@@ -20,7 +20,7 @@ mod view;
 fn main() {
     let opengl = OpenGL::V3_2;
     let mut window: GlutinWindow = WindowSettings::new("Conway's Game of Life", [442, 442])
-        .opengl(opengl)
+        .graphics_api(opengl)
         .exit_on_esc(true)
         .build()
         .unwrap();
